@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using EnvDTE;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio;
 using Task = System.Threading.Tasks.Task;
 
 namespace AutoSaveFile
@@ -25,6 +28,11 @@ namespace AutoSaveFile
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [Guid(AutoSaveFilePackage.PackageGuidString)]
+    [ProvideService(typeof(AutoSaveFilePackage), IsAsyncQueryable = true)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasMultipleProjects_string, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasSingleProject_string, PackageAutoLoadFlags.BackgroundLoad)]
     public sealed class AutoSaveFilePackage : AsyncPackage
     {
         /// <summary>
@@ -32,20 +40,68 @@ namespace AutoSaveFile
         /// </summary>
         public const string PackageGuidString = "d520a8f3-cfd5-4ba3-a154-66b97d118c91";
 
+        private TextEditorEvents _dteEditorEvents;
+
         #region Package Members
 
         /// <summary>
-        /// Initialization of the package; this method is called right after the package is sited, so this is the place
-        /// where you can put all the initialization code that rely on services provided by VisualStudio.
+        /// Initialisation of the package; this method is called right after the package is sited, so this is the place
+        /// where you can put all the Initialisation code that rely on services provided by VisualStudio.
         /// </summary>
-        /// <param name="cancellationToken">A cancellation token to monitor for initialization cancellation, which can occur when VS is shutting down.</param>
+        /// <param name="cancellationToken">A cancellation token to monitor for Initialisation cancellation, which can occur when VS is shutting down.</param>
         /// <param name="progress">A provider for progress updates.</param>
-        /// <returns>A task representing the async work of package initialization, or an already completed task if there is none. Do not return null from this method.</returns>
+        /// <returns>A task representing the async work of package Initialisation, or an already completed task if there is none. Do not return null from this method.</returns>
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            // When initialized asynchronously, the current thread may be a background thread at this point.
-            // Do any initialization that requires the UI thread after switching to the UI thread.
-            await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            // When Initialised asynchronously, the current thread may be a background thread at this point.
+            // Do any Initialisation that requires the UI thread after switching to the UI thread.
+            //await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
+            GetLogger().LogInformation(GetPackageName(), "Initialising.");
+            await base.InitializeAsync(cancellationToken, progress);
+
+            try
+            {
+                var dte = (DTE)this.GetService(typeof(DTE));
+                var _dteEvents = dte.Events;
+
+                _dteEditorEvents = _dteEvents.TextEditorEvents;
+                _dteEditorEvents.LineChanged += OnLineChanged;
+
+                GetLogger().LogInformation(GetPackageName(), "Initialised.");
+            }
+            catch (Exception exception)
+            {
+                GetLogger().LogError(GetPackageName(), "Exception during initialisation", exception);
+            }
+        }
+
+        private void OnLineChanged(TextPoint StartPoint, TextPoint EndPoint, int Hint)
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    //Todo make this time configurable
+                    System.Threading.Thread.Sleep(1000 * 2);
+
+                    var dte = (DTE)this.GetService(typeof(DTE));
+                    Document doc = dte.ActiveDocument;
+
+                    doc.Save();
+                }
+                catch (Exception exception)
+                {
+                    GetLogger().LogError(GetPackageName(), "Exception during initialisation", exception);
+                }
+            });
+        }
+
+        private string GetPackageName() => ToString();
+
+        private IVsActivityLog GetLogger()
+        {
+            return this.GetService(typeof(SVsActivityLog)) as IVsActivityLog ?? new NullLogger();
         }
 
         #endregion
