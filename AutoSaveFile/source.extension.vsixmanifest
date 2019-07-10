@@ -3,7 +3,9 @@
     <Metadata>
         <Identity Id="AutoSaveFile.dee600b4-1678-4538-bad2-bc1e05056118" Version="1.1" Language="en-US" Publisher="Hangjit Rai" />
         <DisplayName>AutoSaveFile</DisplayName>
-        <Description xml:space="preserve">This extension help you to save your changes as you make them without having to type Ctrl-S. The time delay is currently set to 2 seconds.</Description>
+        <Description xml:space="preserve">This extension help you to save your changes as you make them without having to type Ctrl-S. The time delay is currently set to 2 seconds. Only exception is when the cursor is at the end of the line.
+
+The file also gets saved if it loses focus.</Description>
         <MoreInfo>https://github.com/hrai/auto-save-file</MoreInfo>
         <Tags>autosave, save</Tags>
     </Metadata>

@@ -105,7 +105,6 @@ namespace AutoSaveFile
                     if (windowType == "Document")
                     {
                         Document doc = dte.ActiveDocument;
-
                         doc.Save();
                     }
                 }
