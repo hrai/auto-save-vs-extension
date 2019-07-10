@@ -41,6 +41,7 @@ namespace AutoSaveFile
         public const string PackageGuidString = "d520a8f3-cfd5-4ba3-a154-66b97d118c91";
 
         private TextEditorEvents _dteEditorEvents;
+        private WindowEvents _dteWindowEvents;
 
         #region Package Members
 
@@ -66,7 +67,11 @@ namespace AutoSaveFile
                 var _dteEvents = dte.Events;
 
                 _dteEditorEvents = _dteEvents.TextEditorEvents;
+                _dteWindowEvents = _dteEvents.WindowEvents;
+
                 _dteEditorEvents.LineChanged += OnLineChanged;
+                _dteWindowEvents.WindowActivated += OnWindowActivated;
+
 
                 GetLogger().LogInformation(GetPackageName(), "Initialised.");
             }
@@ -76,8 +81,17 @@ namespace AutoSaveFile
             }
         }
 
-        private void OnLineChanged(TextPoint StartPoint, TextPoint EndPoint, int Hint)
+        private void OnWindowActivated(Window gotFocus, Window lostFocus)
         {
+            if (lostFocus != null)
+                lostFocus.Document.Save();
+        }
+
+        private void OnLineChanged(TextPoint startPoint, TextPoint endPoint, int Hint)
+        {
+            if (endPoint.AtEndOfLine)
+                return;
+
             Task.Run(() =>
             {
                 try
@@ -91,7 +105,6 @@ namespace AutoSaveFile
                     if (windowType == "Document")
                     {
                         Document doc = dte.ActiveDocument;
-                        //dte.
 
                         doc.Save();
                     }
