@@ -84,7 +84,7 @@ namespace AutoSaveFile
         private void OnWindowActivated(Window gotFocus, Window lostFocus)
         {
             if (lostFocus != null)
-                lostFocus.Document.Save();
+                lostFocus.Document?.Save();
         }
 
         private void OnLineChanged(TextPoint startPoint, TextPoint endPoint, int Hint)
