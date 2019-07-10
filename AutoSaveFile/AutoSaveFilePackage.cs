@@ -86,9 +86,15 @@ namespace AutoSaveFile
                     System.Threading.Thread.Sleep(1000 * 2);
 
                     var dte = (DTE)this.GetService(typeof(DTE));
-                    Document doc = dte.ActiveDocument;
+                    var windowType = dte.ActiveWindow.Kind;
 
-                    doc.Save();
+                    if (windowType == "Document")
+                    {
+                        Document doc = dte.ActiveDocument;
+                        //dte.
+
+                        doc.Save();
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -97,7 +103,7 @@ namespace AutoSaveFile
             });
         }
 
-        private string GetPackageName() => ToString();
+        private string GetPackageName() => nameof(AutoSaveFilePackage);
 
         private IVsActivityLog GetLogger()
         {
