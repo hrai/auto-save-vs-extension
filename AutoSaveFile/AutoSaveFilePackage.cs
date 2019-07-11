@@ -103,8 +103,6 @@ namespace AutoSaveFile
 
         private void OnLineChanged(TextPoint startPoint, TextPoint endPoint, int Hint)
         {
-
-            _cancellationTokenSource = new CancellationTokenSource();
             var changedText = GetChangedText(startPoint, endPoint);
             if (changedText.Length != 0 && IsLastModifiedCharacterPeriod(changedText))
             {
@@ -123,11 +121,7 @@ namespace AutoSaveFile
 
                     if (!_cancellationTokenSource.IsCancellationRequested)
                     {
-                        if (windowType == "Document")
-                        {
-                            Document doc = dte.ActiveDocument;
-                            doc.Save();
-                        }
+                        SaveDocument(dte, windowType);
                     }
                     else
                         _cancellationTokenSource = new CancellationTokenSource();
@@ -140,6 +134,15 @@ namespace AutoSaveFile
 
             //if (_cancellationTokenSource.IsCancellationRequested)
             //    _cancellationTokenSource = new CancellationTokenSource();
+        }
+
+        private static void SaveDocument(DTE dte, string windowType)
+        {
+            if (windowType == "Document")
+            {
+                Document doc = dte.ActiveDocument;
+                doc.Save();
+            }
         }
 
         private string GetPackageName() => nameof(AutoSaveFilePackage);
