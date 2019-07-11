@@ -42,6 +42,7 @@ namespace AutoSaveFile
 
         private TextEditorEvents _dteEditorEvents;
         private WindowEvents _dteWindowEvents;
+        private CancellationTokenSource _cancellationTokenSource;
 
         #region Package Members
 
@@ -72,6 +73,7 @@ namespace AutoSaveFile
                 _dteEditorEvents.LineChanged += OnLineChanged;
                 _dteWindowEvents.WindowActivated += OnWindowActivated;
 
+                _cancellationTokenSource = new CancellationTokenSource();
 
                 GetLogger().LogInformation(GetPackageName(), "Initialised.");
             }
@@ -87,32 +89,57 @@ namespace AutoSaveFile
                 lostFocus.Document?.Save();
         }
 
+        private static string GetChangedText(TextPoint startPoint, TextPoint endPoint)
+        {
+            EditPoint editPoint = startPoint.CreateEditPoint();
+            var content = editPoint.GetText(endPoint);
+            return content;
+        }
+
+        public bool IsLastModifiedCharacterPeriod(string changedText)
+        {
+            return changedText.LastIndexOf('.') == changedText.Length - 1;
+        }
+
         private void OnLineChanged(TextPoint startPoint, TextPoint endPoint, int Hint)
         {
-            if (endPoint.AtEndOfLine)
-                return;
+
+            _cancellationTokenSource = new CancellationTokenSource();
+            var changedText = GetChangedText(startPoint, endPoint);
+            if (changedText.Length != 0 && IsLastModifiedCharacterPeriod(changedText))
+            {
+                _cancellationTokenSource.Cancel();
+            }
 
             Task.Run(() =>
             {
                 try
                 {
                     //Todo make this time configurable
-                    System.Threading.Thread.Sleep(1000 * 2);
+                    System.Threading.Thread.Sleep(1000 * 5);
 
                     var dte = (DTE)this.GetService(typeof(DTE));
                     var windowType = dte.ActiveWindow.Kind;
 
-                    if (windowType == "Document")
+                    if (!_cancellationTokenSource.IsCancellationRequested)
                     {
-                        Document doc = dte.ActiveDocument;
-                        doc.Save();
+                        if (windowType == "Document")
+                        {
+                            Document doc = dte.ActiveDocument;
+                            doc.Save();
+                        }
                     }
+                    else
+                        _cancellationTokenSource = new CancellationTokenSource();
                 }
                 catch (Exception exception)
                 {
                     GetLogger().LogError(GetPackageName(), "Exception during initialisation", exception);
                 }
             });
+
+            //if (_cancellationTokenSource.IsCancellationRequested)
+            //    _cancellationTokenSource = new CancellationTokenSource();
         }
 
         private string GetPackageName() => nameof(AutoSaveFilePackage);
