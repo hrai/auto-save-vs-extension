@@ -131,9 +131,6 @@ namespace AutoSaveFile
                     GetLogger().LogError(GetPackageName(), "Exception during initialisation", exception);
                 }
             });
-
-            //if (_cancellationTokenSource.IsCancellationRequested)
-            //    _cancellationTokenSource = new CancellationTokenSource();
         }
 
         private static void SaveDocument(DTE dte, string windowType)
