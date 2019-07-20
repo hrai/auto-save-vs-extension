@@ -6,6 +6,8 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio;
 using Task = System.Threading.Tasks.Task;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AutoSaveFile
 {
@@ -42,7 +44,7 @@ namespace AutoSaveFile
 
         private TextEditorEvents _dteEditorEvents;
         private WindowEvents _dteWindowEvents;
-        private CancellationTokenSource _cancellationTokenSource;
+        private Stack<CancellationTokenSource> _stack;
 
         #region Package Members
 
@@ -73,7 +75,7 @@ namespace AutoSaveFile
                 _dteEditorEvents.LineChanged += OnLineChanged;
                 _dteWindowEvents.WindowActivated += OnWindowActivated;
 
-                _cancellationTokenSource = new CancellationTokenSource();
+                _stack = new Stack<CancellationTokenSource>();
 
                 GetLogger().LogInformation(GetPackageName(), "Initialised.");
             }
@@ -103,11 +105,18 @@ namespace AutoSaveFile
 
         private void OnLineChanged(TextPoint startPoint, TextPoint endPoint, int Hint)
         {
+            var _cancellationTokenSource = new CancellationTokenSource();
+
             var changedText = GetChangedText(startPoint, endPoint);
             if (changedText.Length != 0 && IsLastModifiedCharacterPeriod(changedText))
             {
-                _cancellationTokenSource.Cancel();
+                CancelPreviousSaveTask();
+                return;
             }
+
+            CancelPreviousSaveTask();
+
+            _stack.Push(_cancellationTokenSource);
 
             Task.Run(() =>
             {
@@ -123,14 +132,20 @@ namespace AutoSaveFile
                     {
                         SaveDocument(dte, windowType);
                     }
-                    else
-                        _cancellationTokenSource = new CancellationTokenSource();
                 }
                 catch (Exception exception)
                 {
                     GetLogger().LogError(GetPackageName(), "Exception during initialisation", exception);
                 }
             });
+        }
+
+        private void CancelPreviousSaveTask()
+        {
+            if (_stack.Any())
+            {
+                _stack.Pop().Cancel();
+            }
         }
 
         private static void SaveDocument(DTE dte, string windowType)
