@@ -57,6 +57,7 @@ namespace AutoSaveFile
         /// <returns>A task representing the async work of package Initialisation, or an already completed task if there is none. Do not return null from this method.</returns>
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             // When Initialised asynchronously, the current thread may be a background thread at this point.
             // Do any Initialisation that requires the UI thread after switching to the UI thread.
             //await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
@@ -66,7 +67,7 @@ namespace AutoSaveFile
 
             try
             {
-                var dte = (DTE)this.GetService(typeof(DTE));
+                var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
                 var _dteEvents = dte.Events;
 
                 _dteEditorEvents = _dteEvents.TextEditorEvents;
@@ -105,8 +106,6 @@ namespace AutoSaveFile
 
         private void OnLineChanged(TextPoint startPoint, TextPoint endPoint, int Hint)
         {
-            var _cancellationTokenSource = new CancellationTokenSource();
-
             var changedText = GetChangedText(startPoint, endPoint);
             if (changedText.Length != 0 && IsLastModifiedCharacterPeriod(changedText))
             {
@@ -116,28 +115,31 @@ namespace AutoSaveFile
 
             CancelPreviousSaveTask();
 
+            var _cancellationTokenSource = new CancellationTokenSource();
             _stack.Push(_cancellationTokenSource);
 
-            Task.Run(() =>
-            {
-                try
-                {
-                    //Todo make this time configurable
-                    System.Threading.Thread.Sleep(1000 * 5);
+            Task.Run(async () =>
+                         {
+                             try
+                             {
+                                 await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
 
-                    var dte = (DTE)this.GetService(typeof(DTE));
-                    var windowType = dte.ActiveWindow.Kind;
+                                 //Todo make this time configurable
+                                 await Task.Delay(1000 * 5);
 
-                    if (!_cancellationTokenSource.IsCancellationRequested)
-                    {
-                        SaveDocument(dte, windowType);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    GetLogger().LogError(GetPackageName(), "Exception during initialisation", exception);
-                }
-            });
+                                 var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
+                                 var windowType = dte.ActiveWindow.Kind;
+
+                                 if (!_cancellationTokenSource.IsCancellationRequested)
+                                 {
+                                     SaveDocument(dte, windowType);
+                                 }
+                             }
+                             catch (Exception exception)
+                             {
+                                 GetLogger().LogError(GetPackageName(), "Exception during line change event handling", exception);
+                             }
+                         });
         }
 
         private void CancelPreviousSaveTask()
