@@ -35,6 +35,7 @@ namespace AutoSaveFile
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasMultipleProjects_string, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionHasSingleProject_string, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideOptionPage(typeof(OptionPageGrid), "Auto Save File", "General", 0, 0, true)]
     public sealed class AutoSaveFilePackage : AsyncPackage
     {
         /// <summary>
@@ -122,10 +123,7 @@ namespace AutoSaveFile
                          {
                              try
                              {
-                                 await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
-
-                                 //Todo make this time configurable
-                                 await Task.Delay(1000 * 5);
+                                 await WaitForUserConfiguredDelayAsync();
 
                                  var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
                                  var windowType = dte.ActiveWindow.Kind;
@@ -140,6 +138,16 @@ namespace AutoSaveFile
                                  GetLogger().LogError(GetPackageName(), "Exception during line change event handling", exception);
                              }
                          });
+        }
+
+        private async Task WaitForUserConfiguredDelayAsync()
+        {
+            await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
+
+            var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+            var timeDelayInSeconds = optionsPage.TimeDelay;
+
+            await Task.Delay(1000 * timeDelayInSeconds);
         }
 
         private void CancelPreviousSaveTask()
