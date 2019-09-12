@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="AutoSaveFile.dee600b4-1678-4538-bad2-bc1e05056118" Version="1.5" Language="en-US" Publisher="Hangjit Rai" />
+        <Identity Id="AutoSaveFile.dee600b4-1678-4538-bad2-bc1e05056118" Version="2.0" Language="en-US" Publisher="Hangjit Rai" />
         <DisplayName>Auto Save File</DisplayName>
         <Description xml:space="preserve">This extension help you to save your changes as you make them without having to type Ctrl-S. The time delay is currently set to 5 seconds. Only exception is when the last added character was period[.].
 
-The file also gets saved if it loses focus.</Description>
+The file also gets saved if it loses focus.
+
+The time delay can be configured from the options panel.</Description>
         <MoreInfo>https://github.com/hrai/auto-save-vs-extension</MoreInfo>
         <Tags>autosave, save</Tags>
     </Metadata>
