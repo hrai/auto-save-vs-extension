@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using EnvDTE;
@@ -204,21 +203,5 @@ namespace AutoSaveFile
         }
 
         #endregion
-    }
-
-    internal class Helper
-    {
-        internal string GetFileType(Window window)
-        {
-            var documentFullName = window.Document?.FullName;
-
-            if (documentFullName == null)
-                documentFullName = window.Project?.FullName;
-
-            if (Path.HasExtension(documentFullName))
-                return Path.GetExtension(documentFullName).Replace(".", "");
-
-            return "";
-        }
     }
 }
