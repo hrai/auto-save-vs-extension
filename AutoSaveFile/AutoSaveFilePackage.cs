@@ -205,7 +205,7 @@ namespace AutoSaveFile
                 return "";
 
             if (Path.HasExtension(documentFullName))
-                return Path.GetExtension(documentFullName);
+                return Path.GetExtension(documentFullName).Replace(".", "");
 
             return "";
         }

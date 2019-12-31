@@ -20,7 +20,21 @@ namespace AutoSaveFileTests
 
             var sut = new Helper();
             var fileType = sut.GetFileType(window.Object);
-            fileType.Should().Be(".cs");
+            fileType.Should().Be("cs");
         }
+
+        [TestCase]
+        public void GetFileType_ReturnsProjExt_WhenOnlyProjPathIsAvailable()
+        {
+            var window = new Mock<Window>();
+            var project = new Mock<Project>();
+            window.Setup(win => win.Project).Returns(project.Object);
+            project.Setup(proj => proj.FullName).Returns("c:\\test\\tester.csproj");
+
+            var sut = new Helper();
+            var fileType = sut.GetFileType(window.Object);
+            fileType.Should().Be("csproj");
+        }
+
     }
 }
