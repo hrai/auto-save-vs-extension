@@ -96,7 +96,15 @@ namespace AutoSaveFile
         private void OnWindowActivated(Window gotFocus, Window lostFocus)
         {
             if (lostFocus != null)
-                lostFocus.Document?.Save();
+            {
+                Save(lostFocus);
+            }
+        }
+
+        private void Save(Window window)
+        {
+            window.Project?.Save();
+            window.Document?.Save();
         }
 
         private static string GetChangedText(TextPoint startPoint, TextPoint endPoint)
@@ -175,8 +183,7 @@ namespace AutoSaveFile
 
                 if (ignoredFileTypes != null && !ignoredFileTypes.Contains(fileType))
                 {
-                    window.Project?.Save();
-                    window.Document?.Save();
+                    Save(window);
                 }
             }
         }
