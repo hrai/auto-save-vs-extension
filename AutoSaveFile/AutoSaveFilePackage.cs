@@ -125,12 +125,11 @@ namespace AutoSaveFile
                              {
                                  await WaitForUserConfiguredDelayAsync();
 
-                                 var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
-                                 var windowType = dte.ActiveWindow.Kind;
-
                                  if (!_cancellationTokenSource.IsCancellationRequested)
                                  {
-                                     SaveDocument(dte, windowType);
+                                     var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
+
+                                     SaveDocument(dte);
                                  }
                              }
                              catch (Exception exception)
@@ -158,12 +157,15 @@ namespace AutoSaveFile
             }
         }
 
-        private static void SaveDocument(DTE dte, string windowType)
+        private static void SaveDocument(DTE dte)
         {
+            var window = dte.ActiveWindow;
+            var windowType = window.Kind;
+
             if (windowType == "Document")
             {
-                Document doc = dte.ActiveDocument;
-                doc.Save();
+                window.Project?.Save();
+                window.Document?.Save();
             }
         }
 
