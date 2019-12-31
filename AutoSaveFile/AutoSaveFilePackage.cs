@@ -183,7 +183,8 @@ namespace AutoSaveFile
             {
                 var fileType = _helper.GetFileType(window);
                 var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-                var ignoredFileTypes = optionsPage.IgnoredFileTypes;
+                var ignoredFileTypes = optionsPage.IgnoredFileTypes?.Split(',')
+                    .Select(str => str.Trim());
 
                 if (ignoredFileTypes != null && !ignoredFileTypes.Contains(fileType))
                 {

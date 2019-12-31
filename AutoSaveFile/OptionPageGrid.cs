@@ -14,6 +14,6 @@ namespace AutoSaveFile
         [Category("General")]
         [DisplayName("Excluded File Types")]
         [Description("File types which will be ignored")]
-        public IList<string> IgnoredFileTypes { get; set; }
+        public string IgnoredFileTypes { get; set; }
     }
 }
