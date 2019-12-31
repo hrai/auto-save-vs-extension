@@ -9,7 +9,9 @@ using Microsoft.VisualStudio;
 using Task = System.Threading.Tasks.Task;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("AutoSaveFileTests")]
 namespace AutoSaveFile
 {
     /// <summary>
@@ -47,6 +49,7 @@ namespace AutoSaveFile
         private TextEditorEvents _dteEditorEvents;
         private WindowEvents _dteWindowEvents;
         private Stack<CancellationTokenSource> _stack;
+        private Helper _helper;
 
         #region Package Members
 
@@ -59,6 +62,8 @@ namespace AutoSaveFile
         /// <returns>A task representing the async work of package Initialisation, or an already completed task if there is none. Do not return null from this method.</returns>
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
+            _helper = new Helper();
+
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             // When Initialised asynchronously, the current thread may be a background thread at this point.
             // Do any Initialisation that requires the UI thread after switching to the UI thread.
@@ -164,7 +169,7 @@ namespace AutoSaveFile
 
             if (windowType == "Document")
             {
-                var fileType = GetFileType(window);
+                var fileType = _helper.GetFileType(window);
                 var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
                 var ignoredFileTypes = optionsPage.IgnoredFileTypes;
 
@@ -176,6 +181,19 @@ namespace AutoSaveFile
             }
         }
 
+
+        private string GetPackageName() => nameof(AutoSaveFilePackage);
+
+        private IVsActivityLog GetLogger()
+        {
+            return this.GetService(typeof(SVsActivityLog)) as IVsActivityLog ?? new NullLogger();
+        }
+
+        #endregion
+    }
+
+    internal class Helper
+    {
         internal string GetFileType(Window window)
         {
             var documentFullName = window.Document?.FullName;
@@ -191,14 +209,5 @@ namespace AutoSaveFile
 
             return "";
         }
-
-        private string GetPackageName() => nameof(AutoSaveFilePackage);
-
-        private IVsActivityLog GetLogger()
-        {
-            return this.GetService(typeof(SVsActivityLog)) as IVsActivityLog ?? new NullLogger();
-        }
-
-        #endregion
     }
 }
