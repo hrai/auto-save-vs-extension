@@ -62,12 +62,12 @@ namespace AutoSaveFile
         /// <returns>A task representing the async work of package Initialisation, or an already completed task if there is none. Do not return null from this method.</returns>
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            _helper = new Helper();
-
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
             // When Initialised asynchronously, the current thread may be a background thread at this point.
             // Do any Initialisation that requires the UI thread after switching to the UI thread.
             //await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
+            _helper = new Helper();
 
             GetLogger().LogInformation(GetPackageName(), "Initialising.");
             await base.InitializeAsync(cancellationToken, progress);
@@ -133,7 +133,8 @@ namespace AutoSaveFile
 
                                  if (!_cancellationTokenSource.IsCancellationRequested)
                                  {
-                                     SaveDocument();
+                                     var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
+                                     SaveDocument(dte);
                                  }
                              }
                              catch (Exception exception)
@@ -161,9 +162,8 @@ namespace AutoSaveFile
             }
         }
 
-        private void SaveDocument()
+        private void SaveDocument(DTE dte)
         {
-            var dte = (DTE)this.GetServiceAsync(typeof(DTE));
             var window = dte.ActiveWindow;
             var windowType = window.Kind;
 
@@ -173,7 +173,7 @@ namespace AutoSaveFile
                 var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
                 var ignoredFileTypes = optionsPage.IgnoredFileTypes;
 
-                if (!ignoredFileTypes.Contains(fileType))
+                if (ignoredFileTypes != null && !ignoredFileTypes.Contains(fileType))
                 {
                     window.Project?.Save();
                     window.Document?.Save();
