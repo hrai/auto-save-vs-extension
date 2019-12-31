@@ -36,5 +36,14 @@ namespace AutoSaveFileTests
             fileType.Should().Be("csproj");
         }
 
+        [TestCase]
+        public void GetFileType_ReturnsEmptyString_WhenDocumentOrProjectIsNotAvailable()
+        {
+            var window = new Mock<Window>();
+
+            var sut = new Helper();
+            var fileType = sut.GetFileType(window.Object);
+            fileType.Should().BeEmpty();
+        }
     }
 }

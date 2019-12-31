@@ -201,9 +201,6 @@ namespace AutoSaveFile
             if (documentFullName == null)
                 documentFullName = window.Project?.FullName;
 
-            if (documentFullName == null)
-                return "";
-
             if (Path.HasExtension(documentFullName))
                 return Path.GetExtension(documentFullName).Replace(".", "");
 
