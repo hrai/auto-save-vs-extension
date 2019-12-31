@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using EnvDTE;
@@ -155,17 +156,40 @@ namespace AutoSaveFile
             }
         }
 
-        private static void SaveDocument()
+        private void SaveDocument()
         {
-            var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
+            var dte = (DTE)this.GetServiceAsync(typeof(DTE));
             var window = dte.ActiveWindow;
             var windowType = window.Kind;
 
             if (windowType == "Document")
             {
-                window.Project?.Save();
-                window.Document?.Save();
+                var fileType = GetFileType(window);
+                var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                var ignoredFileTypes = optionsPage.IgnoredFileTypes;
+
+                if (!ignoredFileTypes.Contains(fileType))
+                {
+                    window.Project?.Save();
+                    window.Document?.Save();
+                }
             }
+        }
+
+        internal string GetFileType(Window window)
+        {
+            var documentFullName = window.Document?.FullName;
+
+            if (documentFullName == null)
+                documentFullName = window.Project?.FullName;
+
+            if (documentFullName == null)
+                return "";
+
+            if (Path.HasExtension(documentFullName))
+                return Path.GetExtension(documentFullName);
+
+            return "";
         }
 
         private string GetPackageName() => nameof(AutoSaveFilePackage);
