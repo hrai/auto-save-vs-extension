@@ -7,6 +7,5 @@ There are 2 conditions when a changed file is saved.
 
 
 ### Configurable Settings
-* The time delay can be configured from the options panel.
-<img src="https://github.com/hrai/auto-save-vs-extension/blob/master/options.png">
+* The time delay can be configured from the options panel. <img src="https://github.com/hrai/auto-save-vs-extension/blob/master/options.png">
 * If you want to exclude some files from auto-saving, you can supply a list of comma-separated file extensions such as '*vb,json,config*'
