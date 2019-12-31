@@ -127,9 +127,7 @@ namespace AutoSaveFile
 
                                  if (!_cancellationTokenSource.IsCancellationRequested)
                                  {
-                                     var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
-
-                                     SaveDocument(dte);
+                                     SaveDocument();
                                  }
                              }
                              catch (Exception exception)
@@ -157,8 +155,9 @@ namespace AutoSaveFile
             }
         }
 
-        private static void SaveDocument(DTE dte)
+        private static void SaveDocument()
         {
+            var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
             var window = dte.ActiveWindow;
             var windowType = window.Kind;
 
