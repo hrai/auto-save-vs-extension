@@ -142,7 +142,12 @@ namespace AutoSaveFile
                                  if (!_cancellationTokenSource.IsCancellationRequested)
                                  {
                                      var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
-                                     SaveDocument(dte);
+                                     var window = dte.ActiveWindow;
+
+                                     if (ShouldSaveDocument(window))
+                                     {
+                                         Save(window);
+                                     }
                                  }
                              }
                              catch (Exception exception)
@@ -170,9 +175,8 @@ namespace AutoSaveFile
             }
         }
 
-        private void SaveDocument(DTE dte)
+        private bool ShouldSaveDocument(Window window)
         {
-            var window = dte.ActiveWindow;
             var windowType = window.Kind;
 
             if (windowType == "Document")
@@ -183,9 +187,11 @@ namespace AutoSaveFile
 
                 if (ignoredFileTypes != null && !ignoredFileTypes.Contains(fileType))
                 {
-                    Save(window);
+                    return true;
                 }
             }
+
+            return false;
         }
 
 
