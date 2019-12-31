@@ -6,3 +6,4 @@ There are 2 conditions when a changed file is saved.
 - The file loses focus.
 
 The time delay can be configured from the options panel.
+<img src="">
