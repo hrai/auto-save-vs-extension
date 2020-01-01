@@ -2,15 +2,13 @@
 using EnvDTE;
 using FluentAssertions;
 using Moq;
-using NUnit.Framework;
-using System;
-using System.Runtime.CompilerServices;
+using Xunit;
 
 namespace AutoSaveFileTests
 {
-    public class AutoSaveFilePackageTests
+    public class HelperTests
     {
-        [TestCase]
+        [Fact]
         public void GetFileType_ReturnsDocumentExt_WhenDocumentPathIsAvailable()
         {
             var window = new Mock<Window>();
@@ -23,7 +21,7 @@ namespace AutoSaveFileTests
             fileType.Should().Be("cs");
         }
 
-        [TestCase]
+        [Fact]
         public void GetFileType_ReturnsProjExt_WhenOnlyProjPathIsAvailable()
         {
             var window = new Mock<Window>();
@@ -36,7 +34,7 @@ namespace AutoSaveFileTests
             fileType.Should().Be("csproj");
         }
 
-        [TestCase]
+        [Fact]
         public void GetFileType_ReturnsEmptyString_WhenDocumentOrProjectIsNotAvailable()
         {
             var window = new Mock<Window>();
@@ -45,5 +43,24 @@ namespace AutoSaveFileTests
             var fileType = sut.GetFileType(window.Object);
             fileType.Should().BeEmpty();
         }
+
+        /* todo - complete this test
+        [VsixFact]
+        public void ShouldSaveDocument_ReturnsTrue_WhenIgnoredFileTypesIsEmpty()
+        {
+            var document = new Mock<Document>();
+            document.Setup(doc => doc.FullName).Returns("c:\\test\\tester.cs");
+
+            var windowMock = new Mock<Window>();
+            windowMock.Setup(win => win.Document).Returns(document.Object);
+            windowMock.SetupGet(win => win.Kind).Returns("Document");
+
+            //var optionsPage = new OptionPageGrid { TimeDelay = 1, IgnoredFileTypes = null };
+            var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+
+            var sut = new Helper();
+            sut.ShouldSaveDocument(windowMock.Object, optionsPage).Should().BeTrue();
+        }
+        */
     }
 }

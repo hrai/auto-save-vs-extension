@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.Shell;
-using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace AutoSaveFile

@@ -143,7 +143,8 @@ namespace AutoSaveFile
                                      var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
                                      var window = dte.ActiveWindow;
 
-                                     if (ShouldSaveDocument(window))
+                                     var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                                     if (_helper.ShouldSaveDocument(window, optionsPage))
                                      {
                                          Save(window);
                                      }
@@ -173,27 +174,6 @@ namespace AutoSaveFile
                 _stack.Pop().Cancel();
             }
         }
-
-        private bool ShouldSaveDocument(Window window)
-        {
-            var windowType = window.Kind;
-
-            if (windowType == "Document")
-            {
-                var fileType = _helper.GetFileType(window);
-                var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-                var ignoredFileTypes = optionsPage.IgnoredFileTypes?.Split(',')
-                    .Select(str => str.Trim());
-
-                if (ignoredFileTypes != null && !ignoredFileTypes.Contains(fileType))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
 
         private string GetPackageName() => nameof(AutoSaveFilePackage);
 
