@@ -8,7 +8,9 @@ using Microsoft.VisualStudio;
 using Task = System.Threading.Tasks.Task;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("AutoSaveFileTests")]
 namespace AutoSaveFile
 {
     /// <summary>
@@ -46,6 +48,7 @@ namespace AutoSaveFile
         private TextEditorEvents _dteEditorEvents;
         private WindowEvents _dteWindowEvents;
         private Stack<CancellationTokenSource> _stack;
+        private Helper _helper;
 
         #region Package Members
 
@@ -62,6 +65,8 @@ namespace AutoSaveFile
             // When Initialised asynchronously, the current thread may be a background thread at this point.
             // Do any Initialisation that requires the UI thread after switching to the UI thread.
             //await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
+            _helper = new Helper();
 
             GetLogger().LogInformation(GetPackageName(), "Initialising.");
             await base.InitializeAsync(cancellationToken, progress);
@@ -90,7 +95,15 @@ namespace AutoSaveFile
         private void OnWindowActivated(Window gotFocus, Window lostFocus)
         {
             if (lostFocus != null)
-                lostFocus.Document?.Save();
+            {
+                Save(lostFocus);
+            }
+        }
+
+        private void Save(Window window)
+        {
+            window.Project?.Save();
+            window.Document?.Save();
         }
 
         private static string GetChangedText(TextPoint startPoint, TextPoint endPoint)
@@ -128,8 +141,13 @@ namespace AutoSaveFile
                                  if (!_cancellationTokenSource.IsCancellationRequested)
                                  {
                                      var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
+                                     var window = dte.ActiveWindow;
 
-                                     SaveDocument(dte);
+                                     var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                                     if (_helper.ShouldSaveDocument(window, optionsPage))
+                                     {
+                                         Save(window);
+                                     }
                                  }
                              }
                              catch (Exception exception)
@@ -154,18 +172,6 @@ namespace AutoSaveFile
             if (_stack.Any())
             {
                 _stack.Pop().Cancel();
-            }
-        }
-
-        private static void SaveDocument(DTE dte)
-        {
-            var window = dte.ActiveWindow;
-            var windowType = window.Kind;
-
-            if (windowType == "Document")
-            {
-                window.Project?.Save();
-                window.Document?.Save();
             }
         }
 

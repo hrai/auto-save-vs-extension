@@ -45,6 +45,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Helper.cs" />
     <Compile Include="LoggerExtensionMethods.cs" />
     <Compile Include="NullLogger.cs" />
     <Compile Include="OptionPageGrid.cs">
