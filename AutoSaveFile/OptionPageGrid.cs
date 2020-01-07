@@ -14,5 +14,10 @@ namespace AutoSaveFile
         [DisplayName("Excluded File Types")]
         [Description("File types which will be ignored")]
         public string IgnoredFileTypes { get; set; }
+
+        [Category("General")]
+        [DisplayName("Save All Files When VS Loses Focus")]
+        [Description("True saves all the files when VS loses focus")]
+        public bool ShouldSaveAllFilesWhenVSLosesFocus { get; set; } = true;
     }
 }

@@ -68,7 +68,7 @@ namespace AutoSaveFile
 
             _helper = new Helper();
 
-            GetLogger().LogInformation(GetPackageName(), "Initialising.");
+            GetLogger().LogInformation(GetPackageName(), "Initialising...");
             await base.InitializeAsync(cancellationToken, progress);
 
             try
@@ -102,45 +102,6 @@ namespace AutoSaveFile
 
             _dteEditorEvents.LineChanged += OnLineChanged;
             _dteWindowEvents.WindowActivated += OnWindowActivated;
-        }
-
-        private void OnDeactivated(object sender, System.EventArgs e)
-        {
-            try
-            {
-                var dte = (DTE)this.GetService(typeof(DTE));
-                dte.ExecuteCommand("File.SaveAll");
-            }
-            catch (Exception exception)
-            {
-                GetLogger().LogError(GetPackageName(), "Exception occurred while saving on window losing focus", exception);
-            }
-        }
-
-        private void OnWindowActivated(Window gotFocus, Window lostFocus)
-        {
-            if (lostFocus != null)
-            {
-                Save(lostFocus);
-            }
-        }
-
-        private void Save(Window window)
-        {
-            window.Project?.Save();
-            window.Document?.Save();
-        }
-
-        private static string GetChangedText(TextPoint startPoint, TextPoint endPoint)
-        {
-            EditPoint editPoint = startPoint.CreateEditPoint();
-            var content = editPoint.GetText(endPoint);
-            return content;
-        }
-
-        public bool IsLastModifiedCharacterPeriod(string changedText)
-        {
-            return changedText.LastIndexOf('.') == changedText.Length - 1;
         }
 
         private void OnLineChanged(TextPoint startPoint, TextPoint endPoint, int Hint)
@@ -180,6 +141,51 @@ namespace AutoSaveFile
                                  GetLogger().LogError(GetPackageName(), "Exception during line change event handling", exception);
                              }
                          });
+        }
+
+        private void OnDeactivated(object sender, System.EventArgs e)
+        {
+            try
+            {
+                var dte = (DTE)this.GetService(typeof(DTE));
+                var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                var saveWhenVsLosesFocus = optionsPage.ShouldSaveAllFilesWhenVSLosesFocus;
+
+                if (saveWhenVsLosesFocus)
+                {
+                    dte.ExecuteCommand("File.SaveAll");
+                }
+            }
+            catch (Exception exception)
+            {
+                GetLogger().LogError(GetPackageName(), "Exception occurred while saving on window losing focus", exception);
+            }
+        }
+
+        private void OnWindowActivated(Window gotFocus, Window lostFocus)
+        {
+            if (lostFocus != null)
+            {
+                Save(lostFocus);
+            }
+        }
+
+        private void Save(Window window)
+        {
+            window.Project?.Save();
+            window.Document?.Save();
+        }
+
+        private static string GetChangedText(TextPoint startPoint, TextPoint endPoint)
+        {
+            EditPoint editPoint = startPoint.CreateEditPoint();
+            var content = editPoint.GetText(endPoint);
+            return content;
+        }
+
+        private bool IsLastModifiedCharacterPeriod(string changedText)
+        {
+            return changedText.LastIndexOf('.') == changedText.Length - 1;
         }
 
         private async Task WaitForUserConfiguredDelayAsync()
