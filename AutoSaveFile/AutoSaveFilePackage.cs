@@ -104,12 +104,6 @@ namespace AutoSaveFile
             _dteWindowEvents.WindowActivated += OnWindowActivated;
         }
 
-
-        public void Close()
-        {
-            System.Windows.Application.Current.Deactivated -= OnDeactivated;
-        }
-
         private void OnDeactivated(object sender, System.EventArgs e)
         {
             try
