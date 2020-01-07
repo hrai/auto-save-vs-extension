@@ -73,14 +73,8 @@ namespace AutoSaveFile
 
             try
             {
-                var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
-                var _dteEvents = dte.Events;
-
-                _dteEditorEvents = _dteEvents.TextEditorEvents;
-                _dteWindowEvents = _dteEvents.WindowEvents;
-
-                _dteEditorEvents.LineChanged += OnLineChanged;
-                _dteWindowEvents.WindowActivated += OnWindowActivated;
+                await BindToLocalVisualStudioEventsAsync();
+                BindToWindowEvents();
 
                 _stack = new Stack<CancellationTokenSource>();
 
@@ -89,6 +83,43 @@ namespace AutoSaveFile
             catch (Exception exception)
             {
                 GetLogger().LogError(GetPackageName(), "Exception during initialisation", exception);
+            }
+        }
+
+        private void BindToWindowEvents()
+        {
+            System.Windows.Application.Current.Deactivated += OnDeactivated;
+            System.Windows.Application.Current.Exit += OnDeactivated;
+        }
+
+        private async Task BindToLocalVisualStudioEventsAsync()
+        {
+            var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
+            var _dteEvents = dte.Events;
+
+            _dteEditorEvents = _dteEvents.TextEditorEvents;
+            _dteWindowEvents = _dteEvents.WindowEvents;
+
+            _dteEditorEvents.LineChanged += OnLineChanged;
+            _dteWindowEvents.WindowActivated += OnWindowActivated;
+        }
+
+
+        public void Close()
+        {
+            System.Windows.Application.Current.Deactivated -= OnDeactivated;
+        }
+
+        private void OnDeactivated(object sender, System.EventArgs e)
+        {
+            try
+            {
+                var dte = (DTE)this.GetService(typeof(DTE));
+                dte.ExecuteCommand("File.SaveAll");
+            }
+            catch (Exception exception)
+            {
+                GetLogger().LogError(GetPackageName(), "Exception occurred while saving on window losing focus", exception);
             }
         }
 
