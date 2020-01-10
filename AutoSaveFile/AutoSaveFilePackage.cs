@@ -68,19 +68,13 @@ namespace AutoSaveFile
 
             _helper = new Helper();
 
-            GetLogger().LogInformation(GetPackageName(), "Initialising.");
+            GetLogger().LogInformation(GetPackageName(), "Initialising...");
             await base.InitializeAsync(cancellationToken, progress);
 
             try
             {
-                var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
-                var _dteEvents = dte.Events;
-
-                _dteEditorEvents = _dteEvents.TextEditorEvents;
-                _dteWindowEvents = _dteEvents.WindowEvents;
-
-                _dteEditorEvents.LineChanged += OnLineChanged;
-                _dteWindowEvents.WindowActivated += OnWindowActivated;
+                await BindToLocalVisualStudioEventsAsync();
+                BindToWindowEvents();
 
                 _stack = new Stack<CancellationTokenSource>();
 
@@ -92,30 +86,22 @@ namespace AutoSaveFile
             }
         }
 
-        private void OnWindowActivated(Window gotFocus, Window lostFocus)
+        private void BindToWindowEvents()
         {
-            if (lostFocus != null)
-            {
-                Save(lostFocus);
-            }
+            System.Windows.Application.Current.Deactivated += OnDeactivated;
+            System.Windows.Application.Current.Exit += OnDeactivated;
         }
 
-        private void Save(Window window)
+        private async Task BindToLocalVisualStudioEventsAsync()
         {
-            window.Project?.Save();
-            window.Document?.Save();
-        }
+            var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
+            var _dteEvents = dte.Events;
 
-        private static string GetChangedText(TextPoint startPoint, TextPoint endPoint)
-        {
-            EditPoint editPoint = startPoint.CreateEditPoint();
-            var content = editPoint.GetText(endPoint);
-            return content;
-        }
+            _dteEditorEvents = _dteEvents.TextEditorEvents;
+            _dteWindowEvents = _dteEvents.WindowEvents;
 
-        public bool IsLastModifiedCharacterPeriod(string changedText)
-        {
-            return changedText.LastIndexOf('.') == changedText.Length - 1;
+            _dteEditorEvents.LineChanged += OnLineChanged;
+            _dteWindowEvents.WindowActivated += OnWindowActivated;
         }
 
         private void OnLineChanged(TextPoint startPoint, TextPoint endPoint, int Hint)
@@ -155,6 +141,51 @@ namespace AutoSaveFile
                                  GetLogger().LogError(GetPackageName(), "Exception during line change event handling", exception);
                              }
                          });
+        }
+
+        private void OnDeactivated(object sender, System.EventArgs e)
+        {
+            try
+            {
+                var dte = (DTE)this.GetService(typeof(DTE));
+                var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                var saveWhenVsLosesFocus = optionsPage.ShouldSaveAllFilesWhenVSLosesFocus;
+
+                if (saveWhenVsLosesFocus)
+                {
+                    dte.ExecuteCommand("File.SaveAll");
+                }
+            }
+            catch (Exception exception)
+            {
+                GetLogger().LogError(GetPackageName(), "Exception occurred while saving on window losing focus", exception);
+            }
+        }
+
+        private void OnWindowActivated(Window gotFocus, Window lostFocus)
+        {
+            if (lostFocus != null)
+            {
+                Save(lostFocus);
+            }
+        }
+
+        private void Save(Window window)
+        {
+            window.Project?.Save();
+            window.Document?.Save();
+        }
+
+        private static string GetChangedText(TextPoint startPoint, TextPoint endPoint)
+        {
+            EditPoint editPoint = startPoint.CreateEditPoint();
+            var content = editPoint.GetText(endPoint);
+            return content;
+        }
+
+        private bool IsLastModifiedCharacterPeriod(string changedText)
+        {
+            return changedText.LastIndexOf('.') == changedText.Length - 1;
         }
 
         private async Task WaitForUserConfiguredDelayAsync()
