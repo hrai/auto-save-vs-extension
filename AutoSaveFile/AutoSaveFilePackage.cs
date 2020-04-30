@@ -94,7 +94,7 @@ namespace AutoSaveFile
 
         private async Task BindToLocalVisualStudioEventsAsync()
         {
-            var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
+            var dte = (DTE)await GetServiceAsync(typeof(DTE));
             var _dteEvents = dte.Events;
 
             _dteEditorEvents = _dteEvents.TextEditorEvents;
@@ -129,11 +129,7 @@ namespace AutoSaveFile
                                      var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
                                      var window = dte.ActiveWindow;
 
-                                     var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-                                     if (_helper.ShouldSaveDocument(window, optionsPage))
-                                     {
-                                         Save(window);
-                                     }
+                                     Save(window);
                                  }
                              }
                              catch (Exception exception)
@@ -172,8 +168,13 @@ namespace AutoSaveFile
 
         private void Save(Window window)
         {
-            window.Project?.Save();
-            window.Document?.Save();
+            var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+
+            if (_helper.ShouldSaveDocument(window, optionsPage))
+            {
+                window.Project?.Save();
+                window.Document?.Save();
+            }
         }
 
         private static string GetChangedText(TextPoint startPoint, TextPoint endPoint)
