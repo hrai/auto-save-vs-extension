@@ -118,25 +118,25 @@ namespace AutoSaveFile
             var _cancellationTokenSource = new CancellationTokenSource();
             _stack.Push(_cancellationTokenSource);
 
-            Task.Run(async () =>
-                         {
-                             try
-                             {
-                                 await WaitForUserConfiguredDelayAsync();
+            _ = Task.Run(async () =>
+                           {
+                               try
+                               {
+                                   await WaitForUserConfiguredDelayAsync();
 
-                                 if (!_cancellationTokenSource.IsCancellationRequested)
-                                 {
-                                     var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
-                                     var window = dte.ActiveWindow;
+                                   if (!_cancellationTokenSource.IsCancellationRequested)
+                                   {
+                                       var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
+                                       var window = dte.ActiveWindow;
 
-                                     Save(window);
-                                 }
-                             }
-                             catch (Exception exception)
-                             {
-                                 GetLogger().LogError(GetPackageName(), "Exception during line change event handling", exception);
-                             }
-                         });
+                                       Save(window);
+                                   }
+                               }
+                               catch (Exception exception)
+                               {
+                                   GetLogger().LogError(GetPackageName(), "Exception during line change event handling", exception);
+                               }
+                           });
         }
 
         private void OnDeactivated(object sender, System.EventArgs e)
@@ -172,8 +172,8 @@ namespace AutoSaveFile
 
             if (_helper.ShouldSaveDocument(window, optionsPage))
             {
-                window.Project?.Save();
                 window.Document?.Save();
+                window.Project?.Save();
             }
         }
 
