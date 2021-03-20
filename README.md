@@ -1,6 +1,6 @@
 # auto-save-vs-extension
 
-An extension that automatically saves the file as you're working on it.
+A Visual Studio extension that automatically saves the file as you're working on it.
 
 There are 3 conditions when changed file/s is saved.
 
