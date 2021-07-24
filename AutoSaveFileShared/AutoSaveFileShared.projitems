@@ -9,5 +9,12 @@
     <Import_RootNamespace>AutoSaveFileShared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AutoSaveFilePackage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LoggerExtensionMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NullLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OptionPageGrid.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
 </Project>
