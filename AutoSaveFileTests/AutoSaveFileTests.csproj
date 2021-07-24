@@ -85,6 +85,7 @@
       <Version>0.2.72</Version>
     </PackageReference>
   </ItemGroup>
+  <Import Project="..\AutoSaveFileShared\AutoSaveFileShared.projitems" Label="Shared" />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

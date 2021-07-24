@@ -14,7 +14,7 @@ EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		AutoSaveFileShared\AutoSaveFileShared.projitems*{2cad1a53-4f5b-4418-9ba4-8667e54ccdc0}*SharedItemsImports = 4
-		AutoSaveFileShared\AutoSaveFileShared.projitems*{85220b04-873a-4859-ac56-62414e34df0a}*SharedItemsImports = 4
+		AutoSaveFileShared\AutoSaveFileShared.projitems*{3630ee61-8a4d-4bbe-8fe3-9772efc7ff9a}*SharedItemsImports = 4
 		AutoSaveFileShared\AutoSaveFileShared.projitems*{bfa82ba2-cf5e-4646-b562-1cd085ba5098}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
