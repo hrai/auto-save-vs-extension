@@ -31,7 +31,7 @@ namespace AutoSaveFile
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [Guid(AutoSaveFilePackage.PackageGuidString)]
+    [Guid(PackageGuidString)]
     [ProvideService(typeof(AutoSaveFilePackage), IsAsyncQueryable = true)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
@@ -172,8 +172,8 @@ namespace AutoSaveFile
 
             if (_helper.ShouldSaveDocument(window, optionsPage))
             {
-                window.Document?.Save();
-                window.Project?.Save();
+                window?.Document?.Save();
+                window?.Project?.Save();
             }
         }
 
