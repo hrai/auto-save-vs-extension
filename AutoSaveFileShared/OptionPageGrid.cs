@@ -18,7 +18,7 @@ namespace AutoSaveFile
         [Category("General")]
         [DisplayName("Excluded Folders")]
         [Description("Folders which will be ignored")]
-        public string IgnoredFolders { get; set; }
+        public string IgnoredFolders { get; set; } = "Microsoft Visual Studio;Windows Kits";
 
         [Category("General")]
         [DisplayName("Save All Files When VS Loses Focus")]
