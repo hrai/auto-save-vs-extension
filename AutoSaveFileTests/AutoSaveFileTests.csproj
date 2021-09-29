@@ -54,12 +54,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AutoSaveFile\AutoSaveFile.csproj">
-      <Project>{85220b04-873a-4859-ac56-62414e34df0a}</Project>
-      <Name>AutoSaveFile</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
@@ -86,7 +80,12 @@
       <Version>0.2.72</Version>
     </PackageReference>
   </ItemGroup>
-  <Import Project="..\AutoSaveFileShared\AutoSaveFileShared.projitems" Label="Shared" />
+  <ItemGroup>
+    <ProjectReference Include="..\AutoSaveFile\AutoSaveFile.csproj">
+      <Project>{85220b04-873a-4859-ac56-62414e34df0a}</Project>
+      <Name>AutoSaveFile</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

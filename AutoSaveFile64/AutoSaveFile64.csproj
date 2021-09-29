@@ -57,9 +57,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Community.VisualStudio.Toolkit">
-      <Version>17.0.75.238-pre</Version>
-    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.0-previews-2-31512-422" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

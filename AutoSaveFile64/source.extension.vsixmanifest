@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="AutoSaveFile64.dc1032e0-e8e5-4d41-8a64-1f34795a79af" Version="1.0" Language="en-US" Publisher="HRai" />
+        <Identity Id="AutoSaveFile64.dc1032e0-e8e5-4d41-8a64-1f34795a79af" Version="2.6" Language="en-US" Publisher="HRai" />
         <DisplayName>Auto Save File</DisplayName>
         <Description xml:space="preserve">This extension help you to save your changes as you make them without having to type Ctrl-S. The time delay is currently set to 5 seconds. Only exception is when the last added character was period[.].
 
