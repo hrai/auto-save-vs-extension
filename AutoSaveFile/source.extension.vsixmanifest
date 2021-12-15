@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="AutoSaveFile.dee600b4-1678-4538-bad2-bc1e05056118" Version="2.6" Language="en-US" Publisher="Hangjit Rai" />
-        <DisplayName>Auto Save File</DisplayName>
+        <Identity Id="AutoSaveFile.dee600b4-1678-4538-bad2-bc1e05056117" Version="2.7" Language="en-US" Publisher="HRai" />
+        <DisplayName>Auto Save File Old</DisplayName>
         <Description xml:space="preserve">This extension help you to save your changes as you make them without having to type Ctrl-S. The time delay is currently set to 5 seconds. Only exception is when the last added character was period[.].
 
 The file also gets saved if it loses focus.
@@ -12,11 +12,11 @@ The time delay can be configured from the options panel.</Description>
         <Tags>autosave, save</Tags>
     </Metadata>
     <Installation AllUsers="true">
-        <InstallationTarget Version="[16.0,18.0)" Id="Microsoft.VisualStudio.Community">
+        <InstallationTarget Version="[16.0,17.0)" Id="Microsoft.VisualStudio.Community">
         </InstallationTarget>
-        <InstallationTarget Version="[16.0,18.0)" Id="Microsoft.VisualStudio.Pro">
+        <InstallationTarget Version="[16.0,17.0)" Id="Microsoft.VisualStudio.Pro">
         </InstallationTarget>
-        <InstallationTarget Version="[16.0,18.0)" Id="Microsoft.VisualStudio.Enterprise">
+        <InstallationTarget Version="[16.0,17.0)" Id="Microsoft.VisualStudio.Enterprise">
         </InstallationTarget>
     </Installation>
     <Dependencies>

@@ -10,6 +10,11 @@ There are 3 conditions when changed file/s is saved.
 | The file loses focus.                                       | Yes                         | No               |
 | Visual Studio loses focus. All the changed files are saved. | No                          | Yes              |
 
+### Visual Studio Marketplace URLs
+
+- VS2019 - https://marketplace.visualstudio.com/items?itemName=HRai.AutoSaveFileOld
+- VS2022 - https://marketplace.visualstudio.com/items?itemName=HRai.AutoSaveFile
+
 ### Configurable Settings
 
 - The time delay can be configured from the options panel. <img src="https://github.com/hrai/auto-save-vs-extension/blob/master/options.png">
