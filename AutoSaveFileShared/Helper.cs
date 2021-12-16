@@ -26,9 +26,9 @@ namespace AutoSaveFile
             return "";
         }
 
-        public static bool IsFileReadOnly(string FileName)
+        public static bool IsFileReadOnly(string fileName)
         {
-            FileInfo fInfo = new FileInfo(FileName);
+            FileInfo fInfo = new FileInfo(fileName);
             return fInfo.IsReadOnly;
         }
 
