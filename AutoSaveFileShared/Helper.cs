@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System;
+using System.Security.AccessControl;
+using System.Security.Principal;
 
 [assembly: InternalsVisibleTo("AutoSaveFileTests")]
 namespace AutoSaveFile
@@ -24,12 +26,26 @@ namespace AutoSaveFile
             return "";
         }
 
+        public static bool IsFileReadOnly(string FileName)
+        {
+            FileInfo fInfo = new FileInfo(FileName);
+            return fInfo.IsReadOnly;
+        }
+
         internal bool ShouldSaveDocument(Window window, OptionPageGrid optionsPage)
         {
             var windowType = window.Kind;
-                        
+
             if (windowType == "Document")
             {
+                var filePath = window.Document.FullName;
+
+                if (File.Exists(filePath) && IsFileReadOnly(filePath))
+                    return false;
+
+                //if (!DirectoryHasPermission(Path.GetDirectoryName(filePath), FileSystemRights.Write))
+                //    return false;
+
                 var directoryList = GetConstituentFoldersFromPath(window);
                 if (IsDocumentInIgnoredFolder(optionsPage.IgnoredFolders, directoryList))
                     return false;
@@ -49,6 +65,36 @@ namespace AutoSaveFile
 
             return false;
         }
+
+        /*
+        private static bool DirectoryHasPermission(string directoryPath, FileSystemRights accessRight)
+        {
+            if (string.IsNullOrEmpty(directoryPath))
+                return false;
+
+            try
+            {
+                var rules = Directory.GetAccessControl(directoryPath).GetAccessRules(true, true, typeof(SecurityIdentifier));
+                var identity = WindowsIdentity.GetCurrent();
+
+                foreach (FileSystemAccessRule rule in rules)
+                {
+                    if (!identity.Groups.Contains(rule.IdentityReference))
+                        continue;
+
+                    if ((accessRight & rule.FileSystemRights) != accessRight)
+                        continue;
+
+                    if (rule.AccessControlType != AccessControlType.Allow)
+                        continue;
+
+                    return true;
+                }
+            }
+            catch { }
+            return false;
+        }
+        */
 
         private IList<string> GetConstituentFoldersFromPath(Window window)
         {
