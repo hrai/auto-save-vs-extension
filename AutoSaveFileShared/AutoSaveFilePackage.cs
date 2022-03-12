@@ -143,12 +143,12 @@ namespace AutoSaveFile
         {
             try
             {
-                var dte = (DTE)this.GetService(typeof(DTE));
                 var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
                 var saveWhenVsLosesFocus = optionsPage.ShouldSaveAllFilesWhenVSLosesFocus;
 
                 if (saveWhenVsLosesFocus)
                 {
+                    var dte = (DTE)this.GetService(typeof(DTE));
                     dte.ExecuteCommand("File.SaveAll");
                 }
             }
@@ -162,7 +162,13 @@ namespace AutoSaveFile
         {
             if (lostFocus != null)
             {
-                Save(lostFocus);
+                var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                var saveFileWhenItLosesFocus = optionsPage.ShouldSaveFileWhenItLosesFocus;
+
+                if (saveFileWhenItLosesFocus)
+                {
+                    Save(lostFocus);
+                }
             }
         }
 
