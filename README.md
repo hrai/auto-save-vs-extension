@@ -7,7 +7,7 @@ There are 3 conditions when changed file/s is saved.
 | Condition                                                   | Respects ignored file types | Can be disabled? |
 | ----------------------------------------------------------- | --------------------------- | ---------------- |
 | The 5 seconds (default) have elapsed since the last change. | Yes                         | No               |
-| The file loses focus.                                       | Yes                         | No               |
+| The file loses focus.                                       | Yes                         | Yes              |
 | Visual Studio loses focus. All the changed files are saved. | No                          | Yes              |
 
 ### Visual Studio Marketplace URLs

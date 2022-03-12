@@ -24,5 +24,10 @@ namespace AutoSaveFile
         [DisplayName("Save All Files When VS Loses Focus")]
         [Description("True saves all the files when VS loses focus")]
         public bool ShouldSaveAllFilesWhenVSLosesFocus { get; set; } = true;
+
+        [Category("General")]
+        [DisplayName("Save File When It Loses Focus")]
+        [Description("True saves the file when it loses focus")]
+        public bool ShouldSaveFileWhenItLosesFocus { get; set; } = true;
     }
 }

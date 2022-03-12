@@ -5,8 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System;
-using System.Security.AccessControl;
-using System.Security.Principal;
 
 [assembly: InternalsVisibleTo("AutoSaveFileTests")]
 namespace AutoSaveFile
