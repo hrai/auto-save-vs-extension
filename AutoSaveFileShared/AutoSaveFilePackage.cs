@@ -152,9 +152,8 @@ namespace AutoSaveFile
                     dte.ExecuteCommand("File.SaveAll");
                 }
             }
-            catch (Exception exception)
+            catch (Exception)
             {
-                GetLogger().LogError(GetPackageName(), "Exception occurred while saving on window losing focus", exception);
             }
         }
 
@@ -174,12 +173,36 @@ namespace AutoSaveFile
 
         private void Save(Window window)
         {
-            var optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+            ThreadHelper.ThrowIfNotOnUIThread();
 
-            if (_helper.ShouldSaveDocument(window, optionsPage))
+            if (window == null)
+            {
+                return;
+            }
+
+            OptionPageGrid optionsPage;
+            try
+            {
+                optionsPage = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+            }
+            catch (Exception)
+            {
+                return;
+            }
+
+            if (!_helper.ShouldSaveDocument(window, optionsPage))
+            {
+                return;
+            }
+
+            try
             {
                 window?.Document?.Save();
                 window?.Project?.Save();
+            }
+            catch (Exception)
+            {
+                return;
             }
         }
 

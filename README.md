@@ -13,7 +13,7 @@ There are 3 conditions when changed file/s is saved.
 ### Visual Studio Marketplace URLs
 
 - VS2019 - https://marketplace.visualstudio.com/items?itemName=HRai.AutoSaveFileOld
-- VS2022 - https://marketplace.visualstudio.com/items?itemName=HRai.AutoSaveFile
+- VS2022,VS2026 - https://marketplace.visualstudio.com/items?itemName=HRai.AutoSaveFile
 
 ### Configurable Settings
 
