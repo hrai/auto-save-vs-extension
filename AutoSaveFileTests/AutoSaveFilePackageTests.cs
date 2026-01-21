@@ -44,6 +44,41 @@ namespace AutoSaveFileTests
             fileType.Should().BeEmpty();
         }
 
+        [Fact]
+        public void ShouldSaveDocument_ReturnsFalse_WhenDocumentIsNotModified()
+        {
+            var document = new Mock<Document>();
+            document.SetupGet(doc => doc.Name).Returns("tester.cs");
+            document.SetupGet(doc => doc.Saved).Returns(true);
+
+            var windowMock = new Mock<Window>();
+            windowMock.SetupGet(win => win.Kind).Returns("Document");
+            windowMock.SetupGet(win => win.Document).Returns(document.Object);
+
+            var optionsPage = new OptionPageGrid { IgnoredFolders = "", IgnoredFileTypes = null };
+
+            var sut = new Helper();
+            sut.ShouldSaveDocument(windowMock.Object, optionsPage).Should().BeFalse();
+        }
+
+        [Fact]
+        public void ShouldSaveDocument_ReturnsTrue_WhenDocumentIsModified()
+        {
+            var document = new Mock<Document>();
+            document.SetupGet(doc => doc.Name).Returns("*tester.cs");
+            document.SetupGet(doc => doc.Saved).Returns(false);
+            document.SetupGet(doc => doc.FullName).Returns("c:\\test\\tester.cs");
+
+            var windowMock = new Mock<Window>();
+            windowMock.SetupGet(win => win.Kind).Returns("Document");
+            windowMock.SetupGet(win => win.Document).Returns(document.Object);
+
+            var optionsPage = new OptionPageGrid { IgnoredFolders = "", IgnoredFileTypes = null };
+
+            var sut = new Helper();
+            sut.ShouldSaveDocument(windowMock.Object, optionsPage).Should().BeTrue();
+        }
+
         /* todo - complete this test
         [VsixFact]
         public void ShouldSaveDocument_ReturnsTrue_WhenIgnoredFileTypesIsEmpty()

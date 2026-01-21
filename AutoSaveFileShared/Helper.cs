@@ -36,6 +36,19 @@ namespace AutoSaveFile
 
             if (windowType == "Document")
             {
+                var document = window.Document;
+                if (document == null)
+                    return false;
+
+                // Save only modified/dirty documents.
+                // VS typically marks dirty buffers with a '*'
+                // (position may vary: "*file.cpp" or "file.cpp*").
+                if (document.Saved)
+                    return false;
+
+                if (!document.Name.Contains("*"))
+                    return false;
+
                 var filePath = window.Document.FullName;
 
                 if (File.Exists(filePath) && IsFileReadOnly(filePath))
