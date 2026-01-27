@@ -46,9 +46,6 @@ namespace AutoSaveFile
                 if (document.Saved)
                     return false;
 
-                if (!document.Name.Contains("*"))
-                    return false;
-
                 var filePath = window.Document.FullName;
 
                 if (File.Exists(filePath) && IsFileReadOnly(filePath))

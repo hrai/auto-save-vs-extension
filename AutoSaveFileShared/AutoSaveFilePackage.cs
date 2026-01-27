@@ -129,6 +129,7 @@ namespace AutoSaveFile
                                        var dte = (DTE)await this.GetServiceAsync(typeof(DTE));
                                        var window = dte.ActiveWindow;
 
+                                       
                                        Save(window);
                                    }
                                }
@@ -173,8 +174,6 @@ namespace AutoSaveFile
 
         private void Save(Window window)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
             if (window == null)
             {
                 return;
